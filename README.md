@@ -22,14 +22,14 @@ This repo is for locally working with Airflow and DBT Core, with Postgres backen
 ### Running Locally
 
 1. Run `docker compose up` and wait for containers to spin up. This could take a while. 
-2. Access Airflow web interface at `localhost:8080`.
-3. Access pgAdmin web interface at `localhost:16543`.
+2. Access pgAdmin web interface at `localhost:16543`. Create a `public` database under the postgres server. 
+3. Access Airflow web interface at `localhost:8080`. Trigger the dag. 
 
 ### Cleanup
 
 Run Ctrl + C or Cmd + C to stop containers, and then `docker compose down`. 
 
-## Misc
+## FAQs
 
 ### How to generate fernet key
 
@@ -37,3 +37,10 @@ Run Ctrl + C or Cmd + C to stop containers, and then `docker compose down`.
 python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 ```
 
+### Incorrect fernet key
+
+Remove docker volume
+
+```sh
+docker compose down -v
+```
