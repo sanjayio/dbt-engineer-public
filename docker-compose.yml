@@ -23,7 +23,7 @@ services:
     networks:
       - airflow-postgres-db-network
   airflow:
-    image: astrocrpublic.azurecr.io/runtime:3.0-4
+    build: .
     command: bash /usr/local/airflow/start_airflow.sh
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
@@ -37,13 +37,7 @@ services:
     ports:
       - ${AIRFLOW_PORT}:8080
     volumes:
-      - ./dags:/usr/local/airflow/dags
-      - ./plugins:/usr/local/airflow/plugins
-      - ./include:/usr/local/airflow/include
-      - ./dbt:/usr/local/airflow/dbt
-      - ./airflow_settings.yaml:/usr/local/airflow/airflow_settings.yaml
-      - ./init_connections.py:/usr/local/airflow/init_connections.py
-      - ./start_airflow.sh:/usr/local/airflow/start_airflow.sh
+      - ./:/usr/local/airflow/
     networks:
       - airflow-postgres-db-network
 

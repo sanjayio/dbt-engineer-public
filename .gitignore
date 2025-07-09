@@ -11,3 +11,5 @@ airflow.cfg
 airflow.db
 data
 servers.json
+*.json.generated
+logs
