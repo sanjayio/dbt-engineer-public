@@ -1,0 +1,60 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    ports:
+      - ${POSTGRES_PORT}:5432 #Keep this aligned with servers.json
+    networks:
+      - airflow-postgres-db-network
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - ${PGADMIN_PORT}:80
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+    networks:
+      - airflow-postgres-db-network
+  airflow:
+    image: astrocrpublic.azurecr.io/runtime:3.0-4
+    command: bash /usr/local/airflow/start_airflow.sh
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/postgres #Keep this aligned with servers.json
+      - AIRFLOW__WEBSERVER__RBAC=True
+      - AIRFLOW__WEBSERVER__EXPOSE_CONFIG=True
+      - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW__CORE__FERNET_KEY}
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    depends_on:
+      - postgres
+    ports:
+      - ${AIRFLOW_PORT}:8080
+    volumes:
+      - ./dags:/usr/local/airflow/dags
+      - ./plugins:/usr/local/airflow/plugins
+      - ./include:/usr/local/airflow/include
+      - ./dbt:/usr/local/airflow/dbt
+      - ./airflow_settings.yaml:/usr/local/airflow/airflow_settings.yaml
+      - ./init_connections.py:/usr/local/airflow/init_connections.py
+      - ./start_airflow.sh:/usr/local/airflow/start_airflow.sh
+    networks:
+      - airflow-postgres-db-network
+
+volumes:
+  postgres-db-volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${POSTGRES_DATA_VOLUME}
+
+networks:
+  airflow-postgres-db-network:
+    driver: bridge

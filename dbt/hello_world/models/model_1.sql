@@ -1,0 +1,1 @@
+SELECT '{{ var("variable_a") }}' as name
