@@ -13,3 +13,5 @@ data
 servers.json
 *.json.generated
 logs
+dbt_venv
+target
