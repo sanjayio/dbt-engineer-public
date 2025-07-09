@@ -1,3 +1,33 @@
+config-version: 2
+
 name: "hello_world"
+version: "3.0.0"
+require-dbt-version: ">=1.5.0"
+
+# dbt-cloud:
+#   project-id: 275557 # Put your project id here
+
+profile: default # Put your profile here
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["data-tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
 vars:
-  variable_a: "value_a"
+  "dbt_date:time_zone": "Australia/Sydney"
+  "name": "dbtEngineer"
+
+models:
+  hello_world:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
